@@ -1,0 +1,23 @@
+The ReAct (Reason + Act) pattern is a technique that helps AI agents solve complex problems by making them "think" before they "do," much like a human does. Instead of just jumping to an answer, the agent follows a cycle: it first reasons about what information it needs, then it acts by using a tool (like searching the web or checking a database) to get that information, and then it observes the result to decide its next step. For example, if you ask an AI, "What is the weather in Tokyo right now?", a ReAct agent will reason ("I need to find the current weather"), act ("Search Google for 'Tokyo weather'"), observe ("The search result says 25°C"), and then finally provide you with the direct answer, ensuring it relies on real, up-to-date facts rather than just guessing.
+
+from langchain_openai import ChatOpenAI
+from langchain.agents import load_tools, initialize_agent, AgentType
+
+# 1. Setup the model that will "Reason"
+llm = ChatOpenAI(model="gpt-4", temperature=0)
+
+# 2. Define the tools the agent can "Act" upon
+# 'serpapi' allows it to search Google
+tools = load_tools(["serpapi"], llm=llm)
+
+# 3. Initialize the agent with the ReAct pattern
+agent = initialize_agent(
+    tools, 
+    llm, 
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, 
+    verbose=True # This shows the "Reasoning" and "Action" steps
+)
+
+# 4. Run the agent
+response = agent.run("What is the current weather in Tokyo?")
+print(response)
