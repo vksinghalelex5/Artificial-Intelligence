@@ -1,0 +1,32 @@
+Training and Hyperparameter Optimization (HPO) for models in production is like constantly fine-tuning a professional athlete’s training regimen based on their performance in recent games. Training is the process of teaching the AI using fresh, real-world data so it stays up-to-date, while Hyperparameter Optimization is the process of automatically tweaking the "settings" of the model—like adjusting the learning rate—to find the perfect balance that makes the AI as accurate and efficient as possible. For example, a streaming service like Netflix uses these processes to constantly update its recommendation engine; it trains the model on what you watched today and tweaks its internal settings to ensure the "Recommended for You" section gets better and more relevant every single time you log in.
+
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+
+# 1. Load data
+data = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test_size=0.2)
+
+# 2. Define the model
+model = SVC()
+
+# 3. Define the 'grid' of hyperparameters to test
+param_grid = {
+    'C': [0.1, 1, 10], 
+    'kernel': ['linear', 'rbf']
+}
+
+# 4. Set up GridSearchCV to find the best settings
+# cv=5 means it will test each combination 5 times on different data splits
+grid = GridSearchCV(estimator=model, param_grid=param_grid, cv=5)
+
+# 5. Run the optimization (Training + HPO)
+grid.fit(X_train, y_train)
+
+# Output the best settings found
+print("Best Hyperparameters:", grid.best_params_)
+
+# The 'grid' object now acts as the best model found
+predictions = grid.predict(X_test)
